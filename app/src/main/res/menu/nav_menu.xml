@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group>
+        <item
+            android:id="@+id/pompes_menu"
+            android:title="@string/pompes_button"/>
+        <item
+            android:id="@+id/boissons_menu"
+            android:title="@string/boissons_button"/>
+        <item
+            android:id="@+id/cocktail_menu"
+            android:title="@string/cocktail_button"/>
+        <item
+            android:id="@+id/verser_menu"
+            android:title="@string/verser_button"/>
+        <item
+            android:id="@+id/next_menu"
+            android:title="@string/next"/>
+    </group>
+
+    <item android:title="Power">
+            <menu>
+                <item
+                    android:icon="@drawable/ic_power_icon"
+                    android:id="@+id/POWER"
+                    android:title="" />
+            </menu>
+    </item>
+</menu>

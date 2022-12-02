@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Cocktail Maker</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="pompes_button">Pompes</string>
+    <string name="boissons_button">Boissons</string>
+    <string name="cocktail_button">Cocktail</string>
+    <string name="verser_button">Verser</string>
+    <string name="menu_label">Menu</string>
+    <string name="pompes_label">Pompes</string>
+    <string name="boissons_label">Boissons</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="menu">Menu</string>
+</resources>
