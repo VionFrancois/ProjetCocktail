@@ -12,21 +12,25 @@ import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity(){
 
+    // The icon to access the menu from TODO
     lateinit var toggle : ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Get the drawerLayout and the Navigation View items
         val drawerLayout : DrawerLayout = findViewById(R.id.nav_menu)
         val navView : NavigationView = findViewById(R.id.navView)
 
+        // Set the icon and menu state
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        // The menu items listener
         navView.setNavigationItemSelectedListener {
             when(it.itemId){
                 R.id.pompes_menu -> Toast.makeText(applicationContext, "Pompes clicked", Toast.LENGTH_SHORT).show()
