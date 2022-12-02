@@ -25,6 +25,29 @@
         android:layout_gravity="start"
         app:menu="@menu/nav_menu"
         app:headerLayout="@layout/nav_layout"
-        android:fitsSystemWindows="true"/>
+        android:fitsSystemWindows="true"
+        android:layoutDirection="ltr">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical"
+            android:padding="16dp">
+            <ImageButton
+                android:id="@+id/POWER"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:scaleType="fitXY"
+                android:background="@null"
+                android:src="@drawable/ic_power_icon"
+                app:tint="@color/gray"
+                android:gravity="center" />
+            <TwoLineListItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>
