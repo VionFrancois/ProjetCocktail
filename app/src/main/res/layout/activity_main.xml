@@ -12,7 +12,7 @@
         android:layout_height="match_parent">
         <!-- Main page content goes here -->
         <include
-            layout="@layout/content_main"
+            layout="@layout/fragment_menu"
             android:layout_height="match_parent"
             android:layout_width="match_parent"/>
 
