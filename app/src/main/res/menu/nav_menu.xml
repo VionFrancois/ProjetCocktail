@@ -17,8 +17,24 @@
             android:id="@+id/verser_menu"
             android:title="@string/verser_button"/>
         <item
-            android:id="@+id/next_menu"
-            android:title="@string/next"/>
+            android:title=""
+            android:enabled="false"/>
+        <item
+            android:title=""
+            android:enabled="false"/>
+        <item
+            android:title=""
+            android:enabled="false"/>
+        <item
+            android:title=""
+            android:enabled="false"/>
+        <item
+            android:title=""
+            android:enabled="false"/>
+        <item
+            android:id="@+id/POWER"
+            android:icon="@drawable/ic_power_icon"
+            android:title="" />
     </group>
 
 </menu>
