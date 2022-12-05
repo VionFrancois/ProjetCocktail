@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/pompes_menu_button"
         android:layout_width="115dp"
         android:layout_height="50dp"
         android:text="@string/pompes_button"
@@ -17,40 +17,40 @@
         app:layout_constraintVertical_bias="0.28" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/boissons_menu_button"
         android:layout_width="115dp"
         android:layout_height="50dp"
         android:text="@string/boissons_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/pompes_menu_button"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/cocktail_menu_button"
         android:layout_width="115dp"
         android:layout_height="50dp"
         android:text="@string/cocktail_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2"
+        app:layout_constraintTop_toBottomOf="@+id/boissons_menu_button"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/verser_menu_button"
         android:layout_width="115dp"
         android:layout_height="50dp"
         android:text="@string/verser_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button3"
+        app:layout_constraintTop_toBottomOf="@+id/cocktail_menu_button"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/next_menu_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/next"
@@ -58,11 +58,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button4"
+        app:layout_constraintTop_toBottomOf="@+id/verser_menu_button"
         app:layout_constraintVertical_bias="0.424" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/menu_menu_textview"
         android:layout_width="275dp"
         android:layout_height="20dp"
         android:background="@color/purple_500"
@@ -73,11 +73,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.514"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/menu_apptitle_textview"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/menu_apptitle_textview"
         android:layout_width="275dp"
         android:layout_height="30dp"
         android:background="@color/purple_500"

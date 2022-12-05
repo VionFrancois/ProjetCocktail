@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintSet.Layout
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 
@@ -36,10 +37,9 @@ class MainActivity : AppCompatActivity(){
                 R.id.pompes_menu -> Toast.makeText(applicationContext, "Pompes clicked", Toast.LENGTH_SHORT).show()
                 R.id.boissons_menu -> Toast.makeText(applicationContext, "Boissons clicked", Toast.LENGTH_SHORT).show()
                 R.id.cocktail_menu -> Toast.makeText(applicationContext, "Cocktail clicked", Toast.LENGTH_SHORT).show()
-                R.id.next_menu -> Toast.makeText(applicationContext, "Next clicked", Toast.LENGTH_SHORT).show()
-                R.id.POWER -> Toast.makeText(applicationContext, "Power clicked", Toast.LENGTH_SHORT).show()
+                R.id.verser_menu -> Toast.makeText(applicationContext, "Verser clicked", Toast.LENGTH_SHORT).show()
+                R.id.POWER -> this.finishAffinity()
             }
-
             true
         }
     }
