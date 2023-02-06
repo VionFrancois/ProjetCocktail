@@ -22,7 +22,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
+<<<<<<< HEAD
 import androidx.core.app.ActivityCompat
+=======
+import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintSet.Layout
+>>>>>>> 62da6a6e847fe03b8bd07e3b3c9191ec3a5a2680
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 
@@ -76,10 +81,9 @@ class MainActivity : AppCompatActivity(){
                 R.id.pompes_menu -> Toast.makeText(applicationContext, "Pompes clicked", Toast.LENGTH_SHORT).show()
                 R.id.boissons_menu -> Toast.makeText(applicationContext, "Boissons clicked", Toast.LENGTH_SHORT).show()
                 R.id.cocktail_menu -> Toast.makeText(applicationContext, "Cocktail clicked", Toast.LENGTH_SHORT).show()
-                R.id.next_menu -> Toast.makeText(applicationContext, "Next clicked", Toast.LENGTH_SHORT).show()
-                R.id.POWER -> Toast.makeText(applicationContext, "Power clicked", Toast.LENGTH_SHORT).show()
+                R.id.verser_menu -> Toast.makeText(applicationContext, "Verser clicked", Toast.LENGTH_SHORT).show()
+                R.id.POWER -> this.finishAffinity()
             }
-
             true
         }
     }
