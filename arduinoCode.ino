@@ -1,14 +1,8 @@
-// Include the AccelStepper Library
-// vvv Documentation about accelStepper vvv
-// http://www.airspayce.com/mikem/arduino/AccelStepper/classAccelStepper.html#abee8d466229b87accba33d6ec929c18f
 #include <AccelStepper.h>
 
 // Define pin connections
 const int dirPin = 4;
 const int stepPin = 3;
-
-const int dirPin1 = 6;
-const int stepPin1 = 5;
 
 // Define motor interface type
 #define motorInterfaceType 1
@@ -16,30 +10,52 @@ const int stepPin1 = 5;
 // Creates an instance
 AccelStepper myStepper(motorInterfaceType, stepPin, dirPin);
 
-AccelStepper myStepBro(motorInterfaceType, stepPin1, dirPin1);
-
 void setup() {
-  // set the maximum speed, acceleration factor,
-  // initial speed and the target position
-  myStepper.setMaxSpeed(2000); // Unit : steps per second
-  myStepper.setAcceleration(120);
-  myStepper.setSpeed(9000);
-  myStepper.moveTo(52000); // 52000 -> 200ml
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  //pinMode(8,OUTPUT);
 
-  myStepBro.setMaxSpeed(2000); // Unit : steps per second
-  myStepBro.setAcceleration(120);
-  myStepBro.setSpeed(9000);
-  myStepBro.moveTo(52000); // 52000 -> 200ml
+  myStepper.setMaxSpeed(1500); // Unit : steps per second
+  myStepper.setAcceleration(550);
+  myStepper.setSpeed(9000);
+  myStepper.moveTo(40000); // 52000 -> 200ml
+  //myStepper.moveTo(52000); // 52000 -> 200ml
+
+  //set_stepper(myStepper);
+
+}
+
+void reset_stepper(AccelStepper step) {
+  //step.setMaxSpeed(2000); // Unit : steps per second
+  //step.setAcceleration(120);
+  //step.setSpeed(9000);
+
+  step.setCurrentPosition(0);
+  step.moveTo(10000);
 }
 
 void loop() {
-  // Change direction once the motor reaches target position
-  /*
-  if (myStepper.distanceToGo() == 0) 
-    myStepper.moveTo(-myStepper.currentPosition());
- */   
-  // Move the motor one step
-  myStepper.run();
-  myStepBro.run();
-  
+  // put your main code here, to run repeatedly:
+  if(Serial.available()>0) {
+    char data = Serial.read();
+    switch(data) {
+      case '1': 
+        Serial.println("oui");
+        bool running;
+        do {         
+           running = myStepper.run();
+        } while(running);
+        data = 0;
+        myStepper.setCurrentPosition(0);
+        myStepper.moveTo(40000); // 52000 -> 200ml
+
+        //set_stepper(myStepper);
+        //reset_stepper(myStepper);
+        break;
+      default : 
+        break;
+    }
+    //Serial.println(data);
+  }
+  delay(50);
 }
