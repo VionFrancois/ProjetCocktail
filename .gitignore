@@ -1,0 +1,33 @@
+# Ignore all files
+*
+
+# Unignore all files with extensions
+!*.*
+
+# Unignore all directories
+!*/
+
+# Ignore MacOS system files
+.DS_store
+
+# Ignore pyCache
+__pycache__/
+
+# Zip
+*.zip
+
+# Java class files
+*.class
+
+# Ignore executables
+*.exe
+
+# Ignore vscode
+*.vscode
+
+# Ignore Android Studio
+.idea/
+local.properties
+
+# Ignore Gradle
+.gradle/
