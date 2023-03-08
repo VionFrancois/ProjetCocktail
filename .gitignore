@@ -28,6 +28,3 @@ __pycache__/
 # Ignore Android Studio
 .idea/
 local.properties
-
-# Ignore Gradle
-.gradle/
