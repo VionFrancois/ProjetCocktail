@@ -26,6 +26,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import java.io.IOException
 import java.util.*
+import kotlin.properties.Delegates
 
 
 class MainActivity : AppCompatActivity(){
@@ -77,10 +78,10 @@ class MainActivity : AppCompatActivity(){
         // The menu items listener
         navView.setNavigationItemSelectedListener {
             when(it.itemId){
-                R.id.pompes_menu -> Toast.makeText(applicationContext, "Pompes clicked", Toast.LENGTH_SHORT).show()
-                R.id.boissons_menu -> Toast.makeText(applicationContext, "Boissons clicked", Toast.LENGTH_SHORT).show()
-                R.id.cocktail_menu -> Toast.makeText(applicationContext, "Cocktail clicked", Toast.LENGTH_SHORT).show()
-                R.id.verser_menu -> Toast.makeText(applicationContext, "Verser clicked", Toast.LENGTH_SHORT).show()
+                R.id.pompes_menu -> Log.i("Message", "Pompes menu pressed")
+                R.id.boissons_menu -> Log.i("Message", "Boissons menu pressed")
+                R.id.cocktail_menu -> Log.i("Message", "Cocktail menu pressed")
+                R.id.verser_menu -> Log.i("Message", "Verser menu pressed")
                 R.id.POWER -> this.finishAffinity()
             }
             true
@@ -178,6 +179,26 @@ class MainActivity : AppCompatActivity(){
         return true
     }
 
+    /**
+     * Connect to the Arduino (easy method)
+     */
+    private fun connectToArduino() : Boolean{
+        if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            return false
+        }
+        if(this.arduinoDevice == null){
+            return false
+        }
+        val socket = this.arduinoDevice?.createRfcommSocketToServiceRecord(UUID.fromString(this.arduinoUUID))
+        socket?.connect()
+        return true
+    }
+
+    /**
+     * Connect to the Arduino (hard method)
+     * Idk which one is better
+     */
     private fun connectArduino() : Boolean {
 
         // Getting the device
@@ -209,39 +230,68 @@ class MainActivity : AppCompatActivity(){
             }
         }
 
-        // Connect to device
-        // If we arrive here, we know that there is only one device in bDeviceMAC, which is the one we want
-        val connectThread = ConnectThread(bDeviceMAC.first())
-        connectThread.start()
+        if (this.bluetoothAdapter?.isEnabled == true) {
+            val prefs_btdev = getSharedPreferences("btdev", 0)
+            val btdevaddr = prefs_btdev.getString("btdevaddr", "?")
+            if (btdevaddr !== "?") {
+                val device = this.bluetoothAdapter?.getRemoteDevice(btdevaddr)
+                val SERIAL_UUID = UUID.fromString(this.arduinoUUID) // bluetooth serial port service
+                var socket: BluetoothSocket? = null
+                try {
+                    socket = device?.createRfcommSocketToServiceRecord(SERIAL_UUID)
+                } catch (e: Exception) {
+                    Log.e("", "Error creating socket")
+                }
+                try {
+                    socket!!.connect()
+                    Log.e("", "Connected")
+                } catch (e: IOException) {
+                    Log.e("", e.message!!)
+                    try {
+                        Log.e("", "trying fallback...")
+                        socket = device?.javaClass?.getMethod(
+                            "createRfcommSocket",
+                            *arrayOf<Class<*>?>(Int::class.javaPrimitiveType)
+                        )?.invoke(device, 1) as BluetoothSocket
+                        socket.connect()
+                        Log.e("", "Connected")
+                    } catch (e2: Exception) {
+                        Log.e("", "Couldn't establish Bluetooth connection!")
+                    }
+                }
+            } else {
+                Log.e("", "BT device not selected")
+            }
+        }
 
         return true
+    }
+
+    /**
+     * Send a message to the arduino
+     */
+    private fun sendBluetoothMessage(socket : BluetoothSocket, pump : Byte, quantity : ByteArray) : Boolean{
+        try{
+            if(!socket.isConnected){
+                return false
+            }
+            val outputStream = socket.outputStream
+            val message = byteArrayOf('M'.code.toByte(), pump).plus(quantity)
+            outputStream.write(message)
+
+            outputStream.flush()
+            return true
+        }
+        catch (e : IOException){
+            Log.e("EXCEPTION", "sendBluetoothMessage: $e")
+            return false
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
         unregisterReceiver(this.receiver)
-    }
-
-    private inner class ConnectThread(device: BluetoothDevice) : Thread(){
-
-        private val mmSocket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
-            device.createRfcommSocketToServiceRecord(UUID.fromString(arduinoUUID))
-        }
-
-        override fun run() {
-            bluetoothAdapter?.cancelDiscovery()
-
-            mmSocket?.connect()
-        }
-
-        fun cancel(){
-            try{
-                mmSocket?.close()
-            }catch(e : IOException){
-                Toast.makeText(applicationContext, "Could not load the client socket " + e.message, Toast.LENGTH_LONG).show()
-            }
-        }
     }
 
 }
