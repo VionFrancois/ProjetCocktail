@@ -33,8 +33,9 @@ class MainActivity : AppCompatActivity(){
 
     private lateinit var toggle : ActionBarDrawerToggle
 
-    private val arduinoAddress : String = "8F5726231100"
+    private val arduinoAddress : String = "8F:57:26:23:11:00"
     private val arduinoUUID : String = "00001101-0000-1000-8000-00805F9B34FB"
+    private val arduinoPin : Int = 8610
 
     private var permissionsCount = 0
 
@@ -78,7 +79,7 @@ class MainActivity : AppCompatActivity(){
         // The menu items listener
         navView.setNavigationItemSelectedListener {
             when(it.itemId){
-                R.id.pompes_menu -> Log.i("Message", "Pompes menu pressed")
+                R.id.pompes_menu -> connectToArduino()
                 R.id.boissons_menu -> Log.i("Message", "Boissons menu pressed")
                 R.id.cocktail_menu -> Log.i("Message", "Cocktail menu pressed")
                 R.id.verser_menu -> Log.i("Message", "Verser menu pressed")
@@ -185,14 +186,51 @@ class MainActivity : AppCompatActivity(){
     private fun connectToArduino() : Boolean{
         if (ActivityCompat.checkSelfPermission(
                 this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.i("ERROR", "Permission not granted")
             return false
         }
+
+        this.bluetoothManager = getSystemService(BluetoothManager::class.java)
+        this.bluetoothAdapter = bluetoothManager.adapter
+        this.arduinoDevice = this.bluetoothAdapter?.getRemoteDevice(this.arduinoAddress)
+
         if(this.arduinoDevice == null){
+            Log.i("ERROR", "Device not found")
             return false
         }
-        val socket = this.arduinoDevice?.createRfcommSocketToServiceRecord(UUID.fromString(this.arduinoUUID))
-        socket?.connect()
+        val socketThread = socketThread()
+        socketThread.start()
         return true
+    }
+
+    private inner class socketThread : Thread() {
+
+        private lateinit var socket : BluetoothSocket
+
+        override fun run() {
+            super.run()
+            if (ActivityCompat.checkSelfPermission(
+                    this@MainActivity,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
+            this.socket = arduinoDevice?.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"))!!
+            bluetoothAdapter?.cancelDiscovery()
+            socket.connect()
+        }
+
+        fun sendMessage(message: String){
+            val buffer = message.toByteArray()
+            val outputStream = socket.outputStream
+            outputStream?.write(buffer)
+            outputStream?.flush()
+            val buffer2 = ByteArray(1024)
+            val bytes = socket.inputStream.read(buffer2)
+            val response = String(buffer2, 0, bytes)
+            Log.i("Message", response)
+        }
     }
 
     /**
@@ -222,7 +260,7 @@ class MainActivity : AppCompatActivity(){
                     }
 
                     if(bDeviceMAC.isEmpty()){
-                        Toast.makeText(applicationContext, "The arduino MAC address wasn't found", Toast.LENGTH_LONG).show()
+                        Log.i("ERROR", "The arduino MAC address wasn't found")
                     }
                 }
                 this.bluetoothAdapter?.cancelDiscovery()
