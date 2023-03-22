@@ -12,9 +12,10 @@
         android:layout_height="match_parent">
         <!-- Main page content goes here -->
         <include
-            layout="@layout/fragment_menu"
+            layout="@layout/main_page"
             android:layout_height="match_parent"
-            android:layout_width="match_parent"/>
+            android:layout_width="match_parent"
+            android:id="@+id/main_page"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

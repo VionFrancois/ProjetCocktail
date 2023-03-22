@@ -2,6 +2,7 @@ package cp.umons.testAndroid
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -16,10 +17,12 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -57,6 +60,7 @@ class MainActivity : AppCompatActivity(){
         }
     }
 
+    @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -64,10 +68,12 @@ class MainActivity : AppCompatActivity(){
         checkBlePermissions()
 
         connectArduino()
+        val socket = connectToArduino()
 
         // Get the drawerLayout and the Navigation View items
         val drawerLayout : DrawerLayout = findViewById(R.id.nav_menu)
         val navView : NavigationView = findViewById(R.id.navView)
+        val mainPage : ConstraintLayout = findViewById(R.id.main_page)
 
         // Set the icon and menu state
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
@@ -79,7 +85,7 @@ class MainActivity : AppCompatActivity(){
         // The menu items listener
         navView.setNavigationItemSelectedListener {
             when(it.itemId){
-                R.id.pompes_menu -> connectToArduino()
+                R.id.pompes_menu -> Log.i("Message", "Pompes menu pressed")
                 R.id.boissons_menu -> Log.i("Message", "Boissons menu pressed")
                 R.id.cocktail_menu -> Log.i("Message", "Cocktail menu pressed")
                 R.id.verser_menu -> Log.i("Message", "Verser menu pressed")
@@ -87,6 +93,28 @@ class MainActivity : AppCompatActivity(){
             }
             true
         }
+        mainPage.setOnClickListener {
+            drawerLayout.closeDrawers()
+        }
+        val grenadineButton : Button = findViewById(R.id.grenadine_main_button)
+        val mentheButton : Button = findViewById(R.id.menthe_main_button)
+        grenadineButton.setOnClickListener {
+            try {
+                Log.i("Message", "Grenadine button pressed")
+                socket?.sendMessage("M1100\nM2120\n$")
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+        mentheButton.setOnClickListener {
+            try {
+                Log.i("Message", "Menthe button pressed")
+                socket?.sendMessage("M1100\nM2120\n$")
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -183,11 +211,11 @@ class MainActivity : AppCompatActivity(){
     /**
      * Connect to the Arduino (easy method)
      */
-    private fun connectToArduino() : Boolean{
+    private fun connectToArduino() : socketThread?{
         if (ActivityCompat.checkSelfPermission(
                 this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             Log.i("ERROR", "Permission not granted")
-            return false
+            return null
         }
 
         this.bluetoothManager = getSystemService(BluetoothManager::class.java)
@@ -196,16 +224,17 @@ class MainActivity : AppCompatActivity(){
 
         if(this.arduinoDevice == null){
             Log.i("ERROR", "Device not found")
-            return false
+            return null
         }
         val socketThread = socketThread()
         socketThread.start()
-        return true
+        return socketThread
     }
 
     private inner class socketThread : Thread() {
 
         private lateinit var socket : BluetoothSocket
+        private var isConnected = false
 
         override fun run() {
             super.run()
@@ -219,9 +248,14 @@ class MainActivity : AppCompatActivity(){
             this.socket = arduinoDevice?.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"))!!
             bluetoothAdapter?.cancelDiscovery()
             socket.connect()
+            this.isConnected = true
         }
 
         fun sendMessage(message: String){
+            if(!this.isConnected){
+                Log.i("ERROR", "Not connected")
+                return
+            }
             val buffer = message.toByteArray()
             val outputStream = socket.outputStream
             outputStream?.write(buffer)

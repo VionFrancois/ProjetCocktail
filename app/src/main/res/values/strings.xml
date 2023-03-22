@@ -14,4 +14,6 @@
     <string name="open">Open</string>
     <string name="close">Close</string>
     <string name="menu">Menu</string>
+    <string name="menthe_button">Menthe</string>
+    <string name="grenadine_button">Grenadine</string>
 </resources>
