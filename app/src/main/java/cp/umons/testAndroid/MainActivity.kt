@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(){
         grenadineButton.setOnClickListener {
             try {
                 Log.i("Message", "Grenadine button pressed")
-                socket?.sendMessage("M1100\nM2120\n$")
+                socket?.sendMessage("M1230\nM222\n$")
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity(){
         mentheButton.setOnClickListener {
             try {
                 Log.i("Message", "Menthe button pressed")
-                socket?.sendMessage("M1100\nM2120\n$")
+                socket?.sendMessage("M1230\nM322\n$")
             } catch (e: IOException) {
                 e.printStackTrace()
             }

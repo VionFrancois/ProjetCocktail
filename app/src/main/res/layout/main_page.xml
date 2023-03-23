@@ -6,26 +6,43 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/menthe_main_button"
-        android:layout_width="115dp"
-        android:layout_height="50dp"
-        android:text="@string/menthe_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.28" />
-
-    <Button
         android:id="@+id/grenadine_main_button"
-        android:layout_width="115dp"
+        android:layout_width="200dp"
         android:layout_height="50dp"
         android:text="@string/grenadine_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/menthe_main_button"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.037" />
+
+    <TextView
+        android:id="@+id/menu_mainText_textview"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:gravity="center"
+        android:radius="3dp"
+        android:text="@string/hey_there_nwhat_do_you_want_to_do"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.514"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25" />
+
+    <Button
+        android:id="@+id/menthe_main_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="@string/menthe_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.452" />
 
     <TextView
         android:id="@+id/menu_menu_textview"
