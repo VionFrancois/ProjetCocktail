@@ -1,21 +1,24 @@
 #include <AccelStepper.h>
 
 // Pump 1
-const int dirPin_pump1 = 4;
-const int stepPin_pump1 = 3;
+const int dirPin_pump1 = 8;
+const int stepPin_pump1 = 7;
 
 // Pump 2
 const int dirPin_pump2 = 6;
 const int stepPin_pump2 = 5;
 
 // Pump 3
-const int dirPin_pump3 = 8;
-const int stepPin_pump3 = 7;
+const int dirPin_pump3 = 4;
+const int stepPin_pump3 = 3;
 
 
 // Setting of the pumps
-const int maxSpeed = 2000;
-const int acceleration = 300;
+const int maxSpeed_wata = 1400;
+const int acceleration_wata = 200;
+
+const int maxSpeed_sirop = 1400;
+const int acceleration_sirop = 200;
 
 // Define motor interface type
 #define motorInterfaceType 1
@@ -34,25 +37,30 @@ const int RUNNING = 0;
 const int WAITING = 1;
 int CURRENT_STATE = WAITING; 
 
-String totalData = "";
-
-
-int mLToStep(int quantity) {
-  // Transform the quantity (in mL) in step.
-  // Formula : rate * quantity + JUMP
-  // We round the step because we need a int and we can't accept float quantities.
-
-  // Constant used in the measurements to get the value to map the quantity in step.
-  // speed = 2 000
-  // acceleration = 550
-  // setspeed = 9000 ?
+/**
+ * Transform the quantity in step.
+ * The ratio is calculated approximatly with our data.
+ * The constant parameters are :
+ * Speed = 2000
+ * Acceleration = 550
+ * 
+ * @param quantity the amout of mililiters we want to get.
+ * @return The number of steps needed to get the quantity wanted.
+*/
+long mLToStep(int quantity) {
+  // TODO : change the function for the 2 motor speed. (check if the motor is slower it delivers lower quantity).
  
-  float rate = 255.0;
-  float step = rate * quantity;
+  double rate = 255.0;
+  double step = rate * quantity;
   return step;
 }
 
 
+/**
+ * Activates the backtracking for all the pumps in the array pumps.
+ * When the backtracking starts, all the pumps are running backward to clean the pipes.
+ * @param pumps AccelStepper array of all the running pumps.
+*/
 void backtrack(AccelStepper pumps[]){
   int i = 0;
   Serial.println("Start backtracking");
@@ -63,16 +71,29 @@ void backtrack(AccelStepper pumps[]){
   
   bool running;
   do {
-    bool tmp = false;
+    running = false;
     for (i=0; i<ACTIVE_PUMPS; i++) {
-      tmp = max(tmp, pumps[i].run());
+      running = max(running, pumps[i].run());
     }
-    running = tmp;
+    if (Serial.available() > 0) {
+      char data = Serial.read();
+      switch (data) {
+      case 'S':
+        Serial.println("Stopping the pumps");
+        return;
+      default:
+        break;
+      }
+    }
   }while(running);
   Serial.println("Finish backtracking");
 }
 
 
+/**
+ * Run all the pumps in the array. All the pumps have to be set up before calling this function.
+ * @param pumps AccelStepper array of all the running pumps.
+*/
 void runPumps(AccelStepper pumps[]) {
   bool stillRunning;
   do {
@@ -80,12 +101,28 @@ void runPumps(AccelStepper pumps[]) {
     for (int i=0; i<ACTIVE_PUMPS; i++){
       stillRunning = max(pumps[i].run(), stillRunning);
     }
+    if (Serial.available() > 0) {
+      char data = Serial.read();
+      switch (data) {
+      case 'S':
+        Serial.println("Stopping the pumps");
+        return;
+      default:
+        break;
+      }
+    }
+
   }while(stillRunning);
   Serial.println("Pumping finished");
   backtrack(pumps);
 }
 
 
+/**
+ * Check if a string is numeric because it isn't implemented natively (cringe)
+ * @param str The string to test
+ * @return true if str is numeric, false otherwise.
+*/
 bool isNumeric(String str){
   for (int i=0; i<str.length(); i++){
     if (!isDigit(str.charAt(i))){
@@ -98,12 +135,13 @@ bool isNumeric(String str){
 
 int setupPump(String request, AccelStepper pump_list[]){  
   int qt;
+  long steps;
   String value;
   
   // request example : M11234\n
 
-  // Maybe use regex, it'll easier.
-  if (request.length() < 3 || request.length() > 6) {
+  // Maybe use regex, it'll be easier.
+  if (request.length() < 3 || request.length() > 7) { 
     Serial.println("Message too short or too long");
     return(1);
   }
@@ -122,8 +160,15 @@ int setupPump(String request, AccelStepper pump_list[]){
           // return(1);
         // }
         qt = value.toInt();
-        // RUN HERE
-        pump1.moveTo(mLToStep(qt));
+        steps = mLToStep(qt);
+        Serial.print("Pump 1 : ");
+        Serial.print("Speed : ");
+        Serial.print(qt);
+        Serial.print("ml - ");
+        Serial.print(steps);
+        Serial.println("steps");
+
+        pump1.moveTo(steps);
         pump_list[ACTIVE_PUMPS] = pump1;
         ACTIVE_PUMPS++;
 
@@ -141,8 +186,14 @@ int setupPump(String request, AccelStepper pump_list[]){
           // return(1);
         // }
         qt = value.toInt();
-        // RUN HERE
-        pump2.moveTo(mLToStep(qt));
+        steps = mLToStep(qt);
+        Serial.print("Pump 2 : ");
+        Serial.print(qt);
+        Serial.print("ml - ");
+        Serial.print(steps);
+        Serial.println("steps");
+
+        pump2.moveTo(steps);
         pump_list[ACTIVE_PUMPS] = pump2;
         ACTIVE_PUMPS++;
 
@@ -155,14 +206,15 @@ int setupPump(String request, AccelStepper pump_list[]){
       case '3':
          // pump3
         value = request.substring(2,request.length()-1);
-        if (!isNumeric(value)){
-          Serial.print("end 4 chars need to be integers, they are : ");
-          Serial.println(value);
-          return(1);
-        }
         qt = value.toInt();
-        // RUN HERE
-        pump3.moveTo(mLToStep(qt));
+        steps = mLToStep(qt);
+        Serial.print("Pump 3 : ");
+        Serial.print(qt);
+        Serial.print("ml - ");
+        Serial.print(steps);
+        Serial.println("steps");
+
+        pump3.moveTo(steps);
         pump_list[ACTIVE_PUMPS] = pump3;
         ACTIVE_PUMPS++;
 
@@ -179,6 +231,7 @@ int setupPump(String request, AccelStepper pump_list[]){
   }
   return(0);
 }
+
 
 void resetPumps(AccelStepper pumps[]){
   for (int i=0; i < ACTIVE_PUMPS; i++){
@@ -199,28 +252,32 @@ void errorInMessage(String message, AccelStepper pumps[]){
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  Serial.print("Start\n");
+  Serial.print("Starting...\n");
 
   // Pump 1
-  pump1.setMaxSpeed(maxSpeed);
-  pump1.setAcceleration(acceleration);
+  pump1.setMaxSpeed(maxSpeed_wata);
+  pump1.setAcceleration(acceleration_wata);
+  pump1.setPinsInverted(true);
 
   // Pump 2
-  pump2.setMaxSpeed(maxSpeed);
-  pump2.setAcceleration(acceleration);
+  pump2.setMaxSpeed(maxSpeed_sirop);
+  pump2.setAcceleration(acceleration_sirop);
+  pump2.setPinsInverted(true);
 
   // Pump 3
-  pump3.setMaxSpeed(250);
-  pump3.setAcceleration(100);
+  pump3.setMaxSpeed(maxSpeed_sirop);
+  pump3.setAcceleration(acceleration_sirop);
+  pump3.setPinsInverted(false);
 
 }
+
 
 void loop() {
   String current_request;
   int feedback;
-  Serial.println("Code setup");
   AccelStepper pumps[MAX_PUMPS];
 
+  Serial.println("Ready");
   while(1) {
     if (Serial.available() > 0){
       char data = Serial.read();
@@ -248,6 +305,23 @@ void loop() {
             resetPumps(pumps);
           }
           current_request = "";
+          break;
+        
+        case '#':
+          Serial.println("Reseting pumps");
+          resetPumps(pumps);
+          break;
+        case '=':
+          Serial.println("Cleaning pipes");
+          pumps[0] = pump1;
+          pumps[1] = pump2;
+          pumps[2] = pump3;
+          ACTIVE_PUMPS = 3;
+          backtrack(pumps);
+          resetPumps(pumps);
+          break;
+        case 'S':
+          Serial.println("Cannot stop pumps while they aren't running");
           break;
         default:
           current_request += data;
