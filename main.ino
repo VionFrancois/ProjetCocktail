@@ -14,10 +14,10 @@ const int stepPin_pump3 = 3;
 
 
 // Setting of the pumps
-const int maxSpeed_wata = 1400;
+const int maxSpeed_wata = 1200;
 const int acceleration_wata = 200;
 
-const int maxSpeed_sirop = 1400;
+const int maxSpeed_sirop = 1200;
 const int acceleration_sirop = 200;
 
 // Define motor interface type
